@@ -2,3 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Critical styles to ensure proper layout even if Tailwind has issues */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Ensure product images are constrained */
+img[alt*="product"], img[alt*="Product"] {
+  max-height: 96px !important;
+  width: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Grid fallback */
+.grid {
+  display: grid;
+  width: 100%;
+}
+
+/* Container constraints */
+.container, [class*="grid"] {
+  max-width: 100%;
+  overflow: hidden;
+}
+

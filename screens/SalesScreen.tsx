@@ -5,14 +5,35 @@ import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
 const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-        <img src={product.imageUrl} alt={product.name} className="w-full h-24 object-cover"/>
-        <div className="p-3 flex flex-col flex-grow">
-            <h3 className="font-semibold text-sm text-gray-800">{product.name}</h3>
-            <p className="text-xs text-gray-600">{product.stock} in stock</p>
-            <div className="mt-auto flex justify-between items-center pt-2">
-                <p className="font-bold text-blue-600">${product.price.toFixed(2)}</p>
-                <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '96px', overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
+            <img 
+                src={product.imageUrl} 
+                alt={product.name} 
+                className="w-full h-24 object-cover"
+                style={{ width: '100%', height: '96px', objectFit: 'cover', display: 'block' }}
+                onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                        target.parentElement.style.display = 'flex';
+                        target.parentElement.style.alignItems = 'center';
+                        target.parentElement.style.justifyContent = 'center';
+                        target.parentElement.textContent = product.name.substring(0, 2).toUpperCase();
+                    }
+                }}
+            />
+        </div>
+        <div className="p-3 flex flex-col flex-grow" style={{ minHeight: 0 }}>
+            <h3 className="font-semibold text-sm text-gray-800" style={{ margin: 0, marginBottom: '4px' }}>{product.name}</h3>
+            <p className="text-xs text-gray-600" style={{ margin: 0, marginBottom: '8px' }}>{product.stock} in stock</p>
+            <div className="mt-auto flex justify-between items-center pt-2" style={{ marginTop: 'auto', paddingTop: '8px' }}>
+                <p className="font-bold text-blue-600" style={{ margin: 0 }}>${product.price.toFixed(2)}</p>
+                <button 
+                    onClick={() => onAddToCart(product)} 
+                    className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors"
+                    style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                >
                     <PlusIcon className="w-4 h-4" />
                 </button>
             </div>
@@ -143,31 +164,42 @@ const SalesScreen: React.FC = () => {
   };
 
   return (
-    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full">
+    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full" style={{ maxWidth: '100%', overflow: 'hidden' }}>
         {lastCompletedSale && <EBillModal sale={lastCompletedSale} onClose={() => setLastCompletedSale(null)} />}
         
         {/* Product Selection */}
-        <div className="lg:col-span-2 lg:flex lg:flex-col">
-            <h1 className="text-2xl font-bold text-gray-800">Sales</h1>
+        <div className="lg:col-span-2 lg:flex lg:flex-col" style={{ minWidth: 0, maxWidth: '100%' }}>
+            <h1 className="text-2xl font-bold text-gray-800" style={{ marginBottom: '16px' }}>Sales</h1>
             <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full p-2 mt-4 mb-2 border rounded-lg"
+                style={{ width: '100%', maxWidth: '100%', padding: '8px', marginTop: '16px', marginBottom: '8px', border: '1px solid #d1d5db', borderRadius: '8px' }}
             />
-            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4">
+            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4" style={{ marginLeft: '-16px', marginRight: '-16px', paddingLeft: '16px', paddingRight: '16px' }}>
                 {CATEGORIES.map(cat => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
                         className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}
+                        style={{ 
+                            padding: '8px 16px', 
+                            fontSize: '14px', 
+                            fontWeight: 600, 
+                            borderRadius: '9999px',
+                            whiteSpace: 'nowrap',
+                            backgroundColor: activeCategory === cat ? '#2563eb' : '#ffffff',
+                            color: activeCategory === cat ? '#ffffff' : '#374151',
+                            border: activeCategory === cat ? 'none' : '1px solid #e5e7eb'
+                        }}
                     >
                         {cat}
                     </button>
                 ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto" style={{ gridAutoRows: 'minmax(200px, auto)', gap: '16px', marginTop: '16px' }}>
                 {filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)}
             </div>
         </div>
