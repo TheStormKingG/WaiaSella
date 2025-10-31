@@ -1,0 +1,7 @@
+{
+  "name": "Zenith POS - Inventory & Sales",
+  "description": "A streamlined point-of-sale (POS) application for small businesses to manage inventory, track sales, and generate reports using AI-powered OCR for easy data entry.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
