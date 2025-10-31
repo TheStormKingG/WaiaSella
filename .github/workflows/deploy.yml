@@ -38,6 +38,7 @@ jobs:
 
       - name: Build application
         env:
+          # GEMINI_API_KEY is optional - app will build without it, but image extraction feature won't work
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run build
 
