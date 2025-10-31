@@ -13,28 +13,63 @@ body {
   overflow-x: hidden;
 }
 
+/* ALL images constrained - critical for product cards */
 img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+  max-width: 100% !important;
+  display: block !important;
 }
 
-/* Ensure product images are constrained */
-img[alt*="product"], img[alt*="Product"] {
+/* Force product card images to be exactly 96px height */
+div[class*="grid"] img,
+.grid img,
+[class*="ProductCard"] img,
+img[alt*="Redbull"],
+img[alt*="Shampoo"],
+img[alt*="Powder"],
+img[alt*="Doritos"],
+img[alt*="Olive"],
+img[alt*="Water"],
+img[alt*="Green"],
+img[alt*="Apples"] {
   max-height: 96px !important;
+  height: 96px !important;
   width: 100% !important;
   object-fit: cover !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+/* Constrain product card containers */
+.grid > *,
+[class*="grid"] > * {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Grid items must be constrained */
+.grid > div,
+[class*="grid"] > div {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Grid fallback */
 .grid {
-  display: grid;
-  width: 100%;
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 /* Container constraints */
 .container, [class*="grid"] {
-  max-width: 100%;
-  overflow: hidden;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Ensure product cards don't overflow */
+[class*="rounded-lg"][class*="shadow"] {
+  max-width: 100% !important;
+  overflow: hidden !important;
 }
 

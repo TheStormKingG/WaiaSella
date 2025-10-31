@@ -5,13 +5,28 @@ import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
 const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%' }}>
-        <div style={{ width: '100%', height: '96px', overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%', minWidth: 0, width: '100%' }}>
+        <div style={{ width: '100%', height: '96px', maxHeight: '96px', minHeight: '96px', overflow: 'hidden', backgroundColor: '#f3f4f6', position: 'relative', flexShrink: 0 }}>
             <img 
                 src={product.imageUrl} 
                 alt={product.name} 
                 className="w-full h-24 object-cover"
-                style={{ width: '100%', height: '96px', objectFit: 'cover', display: 'block' }}
+                style={{ 
+                    width: '100%', 
+                    height: '96px', 
+                    maxHeight: '96px', 
+                    minHeight: '96px',
+                    objectFit: 'cover', 
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    margin: 0,
+                    padding: 0
+                }}
+                loading="lazy"
                 onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
@@ -199,7 +214,14 @@ const SalesScreen: React.FC = () => {
                     </button>
                 ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto" style={{ gridAutoRows: 'minmax(200px, auto)', gap: '16px', marginTop: '16px' }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto" style={{ 
+                gridAutoRows: 'minmax(200px, auto)', 
+                gap: '16px', 
+                marginTop: '16px',
+                width: '100%',
+                maxWidth: '100%',
+                overflow: 'hidden'
+            }}>
                 {filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)}
             </div>
         </div>
