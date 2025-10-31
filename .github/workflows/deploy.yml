@@ -26,6 +26,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for SHA tracking
+
+      - name: Get commit SHA and info
+        id: commit-info
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "sha_full=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          echo "commit_author=$(git log -1 --pretty=%an)" >> $GITHUB_OUTPUT
+          echo "commit_date=$(git log -1 --pretty=%ci)" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+          echo "Commit SHA: $(git rev-parse --short HEAD)"
+          echo "Commit SHA (full): $(git rev-parse HEAD)"
+          echo "Commit message: $(git log -1 --pretty=%B)"
+          echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,9 +56,40 @@ jobs:
         env:
           NODE_ENV: production
           BASE_PATH: '/WaiaSella/'
+          VITE_GIT_SHA: ${{ steps.commit-info.outputs.sha_full }}
+          VITE_GIT_SHA_SHORT: ${{ steps.commit-info.outputs.sha_short }}
+          VITE_GIT_BRANCH: ${{ steps.commit-info.outputs.branch }}
+          VITE_BUILD_DATE: ${{ steps.commit-info.outputs.commit_date }}
+          VITE_BUILD_TIME: ${{ github.run_number }}
           # GEMINI_API_KEY is optional - app will build without it, but image extraction feature won't work
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run build
+
+      - name: Create build info file
+        run: |
+          echo "Git SHA: ${{ steps.commit-info.outputs.sha_full }}" > dist/build-info.txt
+          echo "Git SHA (short): ${{ steps.commit-info.outputs.sha_short }}" >> dist/build-info.txt
+          echo "Branch: ${{ steps.commit-info.outputs.branch }}" >> dist/build-info.txt
+          echo "Commit Message: ${{ steps.commit-info.outputs.commit_message }}" >> dist/build-info.txt
+          echo "Commit Author: ${{ steps.commit-info.outputs.commit_author }}" >> dist/build-info.txt
+          echo "Commit Date: ${{ steps.commit-info.outputs.commit_date }}" >> dist/build-info.txt
+          echo "Build Number: ${{ github.run_number }}" >> dist/build-info.txt
+          echo "Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> dist/build-info.txt
+          echo "GitHub Actions Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> dist/build-info.txt
+
+      - name: Output deployment info
+        run: |
+          echo "🚀 Deployment Information:" 
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Commit SHA (short): ${{ steps.commit-info.outputs.sha_short }}"
+          echo "📦 Commit SHA (full): ${{ steps.commit-info.outputs.sha_full }}"
+          echo "🌿 Branch: ${{ steps.commit-info.outputs.branch }}"
+          echo "📝 Commit Message: ${{ steps.commit-info.outputs.commit_message }}"
+          echo "👤 Author: ${{ steps.commit-info.outputs.commit_author }}"
+          echo "📅 Commit Date: ${{ steps.commit-info.outputs.commit_date }}"
+          echo "🔢 Build Number: ${{ github.run_number }}"
+          echo "🔗 GitHub Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -55,4 +102,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        env:
+          GITHUB_SHA: ${{ steps.commit-info.outputs.sha_full }}
+          GITHUB_SHA_SHORT: ${{ steps.commit-info.outputs.sha_short }}
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📍 URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "📦 Deployed SHA: ${{ steps.commit-info.outputs.sha_short }}"
+          echo "🔗 Commit: ${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}"
 
