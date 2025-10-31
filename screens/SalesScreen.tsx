@@ -5,28 +5,14 @@ import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
 const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow">
-        <div className="relative w-full" style={{ paddingTop: '75%', overflow: 'hidden' }}>
-            <img 
-                src={product.imageUrl} 
-                alt={product.name} 
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = `https://via.placeholder.com/200/cccccc/666666?text=${encodeURIComponent(product.name)}`;
-                }}
-            />
-        </div>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+        <img src={product.imageUrl} alt={product.name} className="w-full h-24 object-cover"/>
         <div className="p-3 flex flex-col flex-grow">
-            <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">{product.name}</h3>
-            <p className="text-xs text-gray-600 mb-2">{product.stock} in stock</p>
-            <div className="mt-auto flex justify-between items-center pt-2 border-t">
-                <p className="font-bold text-blue-600 text-sm">${product.price.toFixed(2)}</p>
-                <button 
-                    onClick={() => onAddToCart(product)} 
-                    className="bg-blue-500 text-white rounded-full p-1.5 hover:bg-blue-600 transition-colors flex-shrink-0"
-                    aria-label={`Add ${product.name} to cart`}
-                >
+            <h3 className="font-semibold text-sm text-gray-800">{product.name}</h3>
+            <p className="text-xs text-gray-600">{product.stock} in stock</p>
+            <div className="mt-auto flex justify-between items-center pt-2">
+                <p className="font-bold text-blue-600">${product.price.toFixed(2)}</p>
+                <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors">
                     <PlusIcon className="w-4 h-4" />
                 </button>
             </div>
@@ -157,81 +143,75 @@ const SalesScreen: React.FC = () => {
   };
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full">
         {lastCompletedSale && <EBillModal sale={lastCompletedSale} onClose={() => setLastCompletedSale(null)} />}
         
-        <div className="flex flex-col lg:flex-row gap-6 h-full">
-            {/* Product Selection */}
-            <div className="flex-1 lg:w-2/3">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Sales</h1>
-                <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <div className="flex space-x-2 overflow-x-auto pb-2 mb-4">
-                    {CATEGORIES.map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => setActiveCategory(cat)}
-                            className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${
-                                activeCategory === cat 
-                                    ? 'bg-blue-600 text-white' 
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                            }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto">
-                    {filteredProducts.length > 0 ? (
-                        filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)
-                    ) : (
-                        <div className="col-span-full text-center text-gray-500 py-8">
-                            No products found. Try a different search or category.
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Cart */}
-            <div className="lg:w-1/3 bg-white p-4 rounded-lg shadow-lg flex flex-col" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
-                <h2 className="text-xl font-bold border-b pb-2 mb-4 text-gray-800">Current Order</h2>
-                <div className="flex-1 overflow-y-auto mb-4 min-h-0">
-                    {cart.length > 0 ? (
-                        <div className="space-y-0">
-                            {cart.map(item => <CartItem key={item.id} item={item} onUpdateQuantity={handleUpdateQuantity} onRemove={handleRemoveFromCart} />)}
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-center h-full">
-                            <p className="text-gray-500 text-center">Your cart is empty.</p>
-                        </div>
-                    )}
-                </div>
-                <div className="border-t pt-4 space-y-2">
-                    <div className="flex justify-between font-medium text-gray-800">
-                        <span>Subtotal</span>
-                        <span>${cartSubtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-700">
-                        <span>VAT (16%)</span>
-                        <span>${cartTax.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-xl font-bold text-gray-800">
-                        <span>Total</span>
-                        <span>${cartTotal.toFixed(2)}</span>
-                    </div>
-                    <button 
-                        onClick={handleCompleteSale}
-                        disabled={cart.length === 0}
-                        className="w-full mt-4 bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        {/* Product Selection */}
+        <div className="lg:col-span-2 lg:flex lg:flex-col">
+            <h1 className="text-2xl font-bold text-gray-800">Sales</h1>
+            <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full p-2 mt-4 mb-2 border rounded-lg"
+            />
+            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4">
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}
                     >
-                        Complete Sale
+                        {cat}
                     </button>
-                </div>
+                ))}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto">
+                {filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)}
+            </div>
+        </div>
+
+        {/* Cart */}
+        <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow-lg mt-6 lg:mt-0 flex flex-col h-full">
+            <h2 className="text-xl font-bold border-b pb-2 text-gray-800">Current Order</h2>
+            <div className="flex-1 overflow-y-auto my-4">
+                {cart.length > 0 ? (
+                    cart.map(item => <CartItem key={item.id} item={item} onUpdateQuantity={handleUpdateQuantity} onRemove={handleRemoveFromCart} />)
+                ) : (
+                    <p className="text-gray-700 text-center mt-8">Your cart is empty.</p>
+                )}
+            </div>
+            <div className="border-t pt-4 space-y-2">
+                {cart.length > 0 && (
+                    <>
+                        <div className="flex justify-between font-medium text-gray-800">
+                            <span>Subtotal</span>
+                            <span>${cartSubtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-700">
+                            <span>VAT (16%)</span>
+                            <span>${cartTax.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-xl font-bold text-gray-800">
+                            <span>Total</span>
+                            <span>${cartTotal.toFixed(2)}</span>
+                        </div>
+                    </>
+                )}
+                {cart.length === 0 && (
+                    <div className="flex justify-between text-gray-700">
+                        <span>Tax</span>
+                        <span>$0.00</span>
+                    </div>
+                )}
+                <button 
+                    onClick={handleCompleteSale}
+                    disabled={cart.length === 0}
+                    className="w-full mt-4 bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    Complete Sale
+                </button>
             </div>
         </div>
     </div>
