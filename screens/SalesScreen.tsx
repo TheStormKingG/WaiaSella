@@ -4,57 +4,62 @@ import type { SaleItem, Product, Sale } from '../types';
 import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
-const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%', minWidth: 0, width: '100%' }}>
-        <div style={{ width: '100%', height: '96px', maxHeight: '96px', minHeight: '96px', overflow: 'hidden', backgroundColor: '#f3f4f6', position: 'relative', flexShrink: 0 }}>
-            <img 
-                src={product.imageUrl} 
-                alt={product.name} 
-                className="w-full h-24 object-cover"
+const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => {
+    const [imageError, setImageError] = React.useState(false);
+    
+    return (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%', minWidth: 0, width: '100%' }}>
+            <div 
                 style={{ 
                     width: '100%', 
-                    height: '96px', 
-                    maxHeight: '96px', 
+                    aspectRatio: '1 / 0.48',
+                    height: '96px',
+                    maxHeight: '96px',
                     minHeight: '96px',
-                    objectFit: 'cover', 
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    margin: 0,
-                    padding: 0
+                    overflow: 'hidden', 
+                    backgroundColor: '#f3f4f6', 
+                    backgroundImage: imageError ? 'none' : `url(${product.imageUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
-                loading="lazy"
-                onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    if (target.parentElement) {
-                        target.parentElement.style.display = 'flex';
-                        target.parentElement.style.alignItems = 'center';
-                        target.parentElement.style.justifyContent = 'center';
-                        target.parentElement.textContent = product.name.substring(0, 2).toUpperCase();
-                    }
-                }}
-            />
-        </div>
-        <div className="p-3 flex flex-col flex-grow" style={{ minHeight: 0 }}>
-            <h3 className="font-semibold text-sm text-gray-800" style={{ margin: 0, marginBottom: '4px' }}>{product.name}</h3>
-            <p className="text-xs text-gray-600" style={{ margin: 0, marginBottom: '8px' }}>{product.stock} in stock</p>
-            <div className="mt-auto flex justify-between items-center pt-2" style={{ marginTop: 'auto', paddingTop: '8px' }}>
-                <p className="font-bold text-blue-600" style={{ margin: 0 }}>${product.price.toFixed(2)}</p>
-                <button 
-                    onClick={() => onAddToCart(product)} 
-                    className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors"
-                    style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                >
-                    <PlusIcon className="w-4 h-4" />
-                </button>
+            >
+                {imageError && (
+                    <span style={{ color: '#6b7280', fontSize: '18px', fontWeight: 'bold' }}>
+                        {product.name.substring(0, 2).toUpperCase()}
+                    </span>
+                )}
+                <img 
+                    src={product.imageUrl} 
+                    alt={product.name} 
+                    style={{ 
+                        display: 'none'
+                    }}
+                    onError={() => setImageError(true)}
+                    onLoad={() => setImageError(false)}
+                />
+            </div>
+            <div className="p-3 flex flex-col flex-grow" style={{ minHeight: 0 }}>
+                <h3 className="font-semibold text-sm text-gray-800" style={{ margin: 0, marginBottom: '4px' }}>{product.name}</h3>
+                <p className="text-xs text-gray-600" style={{ margin: 0, marginBottom: '8px' }}>{product.stock} in stock</p>
+                <div className="mt-auto flex justify-between items-center pt-2" style={{ marginTop: 'auto', paddingTop: '8px' }}>
+                    <p className="font-bold text-blue-600" style={{ margin: 0 }}>${product.price.toFixed(2)}</p>
+                    <button 
+                        onClick={() => onAddToCart(product)} 
+                        className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors"
+                        style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                    >
+                        <PlusIcon className="w-4 h-4" />
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const CartItem: React.FC<{ item: SaleItem; onUpdateQuantity: (id: string, quantity: number) => void; onRemove: (id: string) => void; }> = ({ item, onUpdateQuantity, onRemove }) => (
     <div className="flex items-center justify-between py-3 border-b">
