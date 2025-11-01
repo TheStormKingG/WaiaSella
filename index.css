@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure product card images are always constrained to 96px */
+.rounded-lg img.h-24,
+img.h-24 {
+  height: 96px !important;
+  max-height: 96px !important;
+  object-fit: cover !important;
+}
+
