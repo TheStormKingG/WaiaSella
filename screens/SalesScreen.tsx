@@ -4,94 +4,21 @@ import type { SaleItem, Product, Sale } from '../types';
 import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
-const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => {
-    const [imageError, setImageError] = React.useState(false);
-    
-    return (
-        <div 
-            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" 
-            style={{ 
-                width: '100%',
-                maxWidth: '100%',
-                minWidth: 0,
-                height: 'auto',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-        >
-            <div 
-                className="w-full h-24 overflow-hidden bg-gray-100"
-                style={{ 
-                    width: '100%',
-                    height: '96px',
-                    maxHeight: '96px',
-                    minHeight: '96px',
-                    overflow: 'hidden',
-                    backgroundColor: '#f3f4f6',
-                    flexShrink: 0,
-                    position: 'relative'
-                }}
-            >
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundImage: imageError ? 'none' : `url(${product.imageUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                    }}
-                />
-                {imageError && (
-                    <div style={{ 
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        <span style={{ color: '#6b7280', fontSize: '18px', fontWeight: 'bold' }}>
-                            {product.name.substring(0, 2).toUpperCase()}
-                        </span>
-                    </div>
-                )}
-                <img 
-                    src={product.imageUrl} 
-                    alt={product.name} 
-                    style={{ 
-                        display: 'none'
-                    }}
-                    onError={() => setImageError(true)}
-                    onLoad={() => setImageError(false)}
-                />
-            </div>
-            <div className="p-3 flex flex-col flex-grow" style={{ minHeight: 0 }}>
-                <h3 className="font-semibold text-sm text-gray-800" style={{ margin: 0, marginBottom: '4px' }}>{product.name}</h3>
-                <p className="text-xs text-gray-600" style={{ margin: 0, marginBottom: '8px' }}>{product.stock} in stock</p>
-                <div className="mt-auto flex justify-between items-center pt-2" style={{ marginTop: 'auto', paddingTop: '8px' }}>
-                    <p className="font-bold text-blue-600" style={{ margin: 0 }}>${product.price.toFixed(2)}</p>
-                    <button 
-                        onClick={() => onAddToCart(product)} 
-                        className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors"
-                        style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                    >
-                        <PlusIcon className="w-4 h-4" />
-                    </button>
-                </div>
+const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+        <img src={product.imageUrl} alt={product.name} className="w-full h-24 object-cover"/>
+        <div className="p-3 flex flex-col flex-grow">
+            <h3 className="font-semibold text-sm text-gray-800">{product.name}</h3>
+            <p className="text-xs text-gray-600">{product.stock} in stock</p>
+            <div className="mt-auto flex justify-between items-center pt-2">
+                <p className="font-bold text-blue-600">${product.price.toFixed(2)}</p>
+                <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors">
+                    <PlusIcon className="w-4 h-4" />
+                </button>
             </div>
         </div>
-    );
-};
+    </div>
+);
 
 const CartItem: React.FC<{ item: SaleItem; onUpdateQuantity: (id: string, quantity: number) => void; onRemove: (id: string) => void; }> = ({ item, onUpdateQuantity, onRemove }) => (
     <div className="flex items-center justify-between py-3 border-b">
@@ -216,36 +143,25 @@ const SalesScreen: React.FC = () => {
   };
 
   return (
-    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full">
         {lastCompletedSale && <EBillModal sale={lastCompletedSale} onClose={() => setLastCompletedSale(null)} />}
         
         {/* Product Selection */}
-        <div className="lg:col-span-2 lg:flex lg:flex-col" style={{ minWidth: 0, maxWidth: '100%' }}>
-            <h1 className="text-2xl font-bold text-gray-800" style={{ marginBottom: '16px' }}>Sales</h1>
+        <div className="lg:col-span-2 lg:flex lg:flex-col">
+            <h1 className="text-2xl font-bold text-gray-800">Sales</h1>
             <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full p-2 mt-4 mb-2 border rounded-lg"
-                style={{ width: '100%', maxWidth: '100%', padding: '8px', marginTop: '16px', marginBottom: '8px', border: '1px solid #d1d5db', borderRadius: '8px' }}
             />
-            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4" style={{ marginLeft: '-16px', marginRight: '-16px', paddingLeft: '16px', paddingRight: '16px' }}>
+            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4">
                 {CATEGORIES.map(cat => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
                         className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}
-                        style={{ 
-                            padding: '8px 16px', 
-                            fontSize: '14px', 
-                            fontWeight: 600, 
-                            borderRadius: '9999px',
-                            whiteSpace: 'nowrap',
-                            backgroundColor: activeCategory === cat ? '#2563eb' : '#ffffff',
-                            color: activeCategory === cat ? '#ffffff' : '#374151',
-                            border: activeCategory === cat ? 'none' : '1px solid #e5e7eb'
-                        }}
                     >
                         {cat}
                     </button>
@@ -267,28 +183,18 @@ const SalesScreen: React.FC = () => {
                 )}
             </div>
             <div className="border-t pt-4 space-y-2">
-                {cart.length > 0 && (
-                    <>
-                        <div className="flex justify-between font-medium text-gray-800">
-                            <span>Subtotal</span>
-                            <span>${cartSubtotal.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-700">
-                            <span>VAT (16%)</span>
-                            <span>${cartTax.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-xl font-bold text-gray-800">
-                            <span>Total</span>
-                            <span>${cartTotal.toFixed(2)}</span>
-                        </div>
-                    </>
-                )}
-                {cart.length === 0 && (
-                    <div className="flex justify-between text-gray-700">
-                        <span>Tax</span>
-                        <span>$0.00</span>
-                    </div>
-                )}
+                <div className="flex justify-between font-medium text-gray-800">
+                    <span>Subtotal</span>
+                    <span>${cartSubtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                    <span>VAT (16%)</span>
+                    <span>${cartTax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xl font-bold text-gray-800">
+                    <span>Total</span>
+                    <span>${cartTotal.toFixed(2)}</span>
+                </div>
                 <button 
                     onClick={handleCompleteSale}
                     disabled={cart.length === 0}
