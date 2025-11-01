@@ -49,7 +49,7 @@ const App: React.FC = () => {
   return (
     <InventoryContext.Provider value={inventoryContextValue}>
       <SalesContext.Provider value={salesContextValue}>
-        <div className="h-screen w-screen bg-gray-100 flex flex-col font-sans">
+        <div className="h-screen w-screen bg-white flex flex-col font-sans">
           <main className="flex-1 overflow-y-auto pb-20">
             {renderScreen()}
           </main>

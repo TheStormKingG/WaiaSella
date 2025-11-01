@@ -5,16 +5,16 @@ import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
 const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col w-full max-w-full">
-        <div className="w-full h-24 overflow-hidden bg-gray-100">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden flex flex-col w-full max-w-full hover:shadow-md transition-shadow">
+        <div className="w-full h-24 overflow-hidden bg-gray-50">
             <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover"/>
         </div>
         <div className="p-3 flex flex-col flex-grow">
-            <h3 className="font-semibold text-sm text-gray-800 truncate">{product.name}</h3>
-            <p className="text-xs text-gray-600">{product.stock} in stock</p>
-            <div className="mt-auto flex justify-between items-center pt-2">
-                <p className="font-bold text-blue-600">${product.price.toFixed(2)}</p>
-                <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1 hover:bg-blue-600 transition-colors flex-shrink-0">
+            <h3 className="font-semibold text-sm text-gray-800 truncate mb-1">{product.name}</h3>
+            <p className="text-xs text-gray-500 mb-2">{product.stock} in stock</p>
+            <div className="mt-auto flex justify-between items-center">
+                <p className="font-bold text-blue-600 text-sm">${product.price.toFixed(2)}</p>
+                <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1.5 hover:bg-blue-600 transition-colors flex-shrink-0 shadow-sm">
                     <PlusIcon className="w-4 h-4" />
                 </button>
             </div>
@@ -145,31 +145,31 @@ const SalesScreen: React.FC = () => {
   };
 
   return (
-    <div className="p-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:h-full">
+    <div className="bg-white min-h-full lg:grid lg:grid-cols-3 lg:gap-6 p-4 lg:p-6">
         {lastCompletedSale && <EBillModal sale={lastCompletedSale} onClose={() => setLastCompletedSale(null)} />}
         
         {/* Product Selection */}
         <div className="lg:col-span-2 lg:flex lg:flex-col">
-            <h1 className="text-2xl font-bold text-gray-800">Sales</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">Sales</h1>
             <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full p-2 mt-4 mb-2 border rounded-lg"
+                className="w-full p-3 mb-3 bg-gray-100 border-0 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4">
+            <div className="flex space-x-2 overflow-x-auto pb-3 mb-4 -mx-4 px-4">
                 {CATEGORIES.map(cat => (
                     <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
-                        className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}
+                        className={`px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-colors ${activeCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}`}
                     >
                         {cat}
                     </button>
                 ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 flex-1 lg:overflow-y-auto w-full">
                 {filteredProducts.map(p => (
                     <div key={p.id} className="w-full">
                         <ProductCard product={p} onAddToCart={handleAddToCart} />
@@ -179,32 +179,26 @@ const SalesScreen: React.FC = () => {
         </div>
 
         {/* Cart */}
-        <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow-lg mt-6 lg:mt-0 flex flex-col h-full">
-            <h2 className="text-xl font-bold border-b pb-2 text-gray-800">Current Order</h2>
-            <div className="flex-1 overflow-y-auto my-4">
+        <div className="lg:col-span-1 bg-white mt-6 lg:mt-0 flex flex-col lg:h-full">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 hidden lg:block">Current Order</h2>
+            <div className="flex-1 overflow-y-auto mb-4 min-h-[200px] lg:min-h-0 flex items-center justify-center">
                 {cart.length > 0 ? (
-                    cart.map(item => <CartItem key={item.id} item={item} onUpdateQuantity={handleUpdateQuantity} onRemove={handleRemoveFromCart} />)
+                    <div className="w-full space-y-0">
+                        {cart.map(item => <CartItem key={item.id} item={item} onUpdateQuantity={handleUpdateQuantity} onRemove={handleRemoveFromCart} />)}
+                    </div>
                 ) : (
-                    <p className="text-gray-700 text-center mt-8">Your cart is empty.</p>
+                    <p className="text-gray-500 text-center">Your cart is empty.</p>
                 )}
             </div>
-            <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between font-medium text-gray-800">
-                    <span>Subtotal</span>
-                    <span>${cartSubtotal.toFixed(2)}</span>
-                </div>
+            <div className="space-y-2 pt-4 border-t border-gray-200">
                 <div className="flex justify-between text-gray-700">
-                    <span>VAT (16%)</span>
+                    <span>Tax</span>
                     <span>${cartTax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xl font-bold text-gray-800">
-                    <span>Total</span>
-                    <span>${cartTotal.toFixed(2)}</span>
                 </div>
                 <button 
                     onClick={handleCompleteSale}
                     disabled={cart.length === 0}
-                    className="w-full mt-4 bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="w-full bg-gray-400 text-white font-bold py-3 rounded-lg hover:bg-gray-500 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400"
                 >
                     Complete Sale
                 </button>
