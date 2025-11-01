@@ -2,14 +2,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Product } from '../types';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
 const responseSchema = {
     type: Type.ARRAY,
     items: {
@@ -37,7 +29,15 @@ const responseSchema = {
 };
 
 export const extractInventoryFromImage = async (base64Image: string): Promise<Partial<Product>[]> => {
+  const API_KEY = process.env.API_KEY || process.env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    console.warn("Gemini API key not set. Image extraction feature is disabled.");
+    throw new Error("Gemini API key is required for image extraction. Please set GEMINI_API_KEY in your environment.");
+  }
+
   try {
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: {
