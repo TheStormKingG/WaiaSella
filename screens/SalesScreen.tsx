@@ -21,16 +21,20 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) 
             }}
         >
             <div 
+                className="w-full h-24 overflow-hidden bg-gray-100"
                 style={{ 
                     width: '100%',
-                    paddingTop: '48%',
-                    position: 'relative',
+                    height: '96px',
+                    maxHeight: '96px',
+                    minHeight: '96px',
                     overflow: 'hidden',
                     backgroundColor: '#f3f4f6',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    position: 'relative'
                 }}
             >
                 <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -247,25 +251,8 @@ const SalesScreen: React.FC = () => {
                     </button>
                 ))}
             </div>
-            <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
-                <div 
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4" 
-                    style={{ 
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                        gap: '16px',
-                        marginTop: '16px',
-                        width: '100%',
-                        maxWidth: '100%',
-                        boxSizing: 'border-box'
-                    }}
-                >
-                    {filteredProducts.map(p => (
-                        <div key={p.id} style={{ width: '100%', maxWidth: '100%', minWidth: 0, overflow: 'hidden' }}>
-                            <ProductCard product={p} onAddToCart={handleAddToCart} />
-                        </div>
-                    ))}
-                </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto">
+                {filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)}
             </div>
         </div>
 
