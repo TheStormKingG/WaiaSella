@@ -8,30 +8,58 @@ const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) 
     const [imageError, setImageError] = React.useState(false);
     
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" style={{ maxWidth: '100%', height: '100%', minWidth: 0, width: '100%' }}>
+        <div 
+            className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col" 
+            style={{ 
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                height: 'auto',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+            }}
+        >
             <div 
                 style={{ 
-                    width: '100%', 
-                    aspectRatio: '1 / 0.48',
-                    height: '96px',
-                    maxHeight: '96px',
-                    minHeight: '96px',
-                    overflow: 'hidden', 
-                    backgroundColor: '#f3f4f6', 
-                    backgroundImage: imageError ? 'none' : `url(${product.imageUrl})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    width: '100%',
+                    paddingTop: '48%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    backgroundColor: '#f3f4f6',
+                    flexShrink: 0
                 }}
             >
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundImage: imageError ? 'none' : `url(${product.imageUrl})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                    }}
+                />
                 {imageError && (
-                    <span style={{ color: '#6b7280', fontSize: '18px', fontWeight: 'bold' }}>
-                        {product.name.substring(0, 2).toUpperCase()}
-                    </span>
+                    <div style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <span style={{ color: '#6b7280', fontSize: '18px', fontWeight: 'bold' }}>
+                            {product.name.substring(0, 2).toUpperCase()}
+                        </span>
+                    </div>
                 )}
                 <img 
                     src={product.imageUrl} 
@@ -219,15 +247,25 @@ const SalesScreen: React.FC = () => {
                     </button>
                 ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4 flex-1 lg:overflow-y-auto" style={{ 
-                gridAutoRows: 'minmax(200px, auto)', 
-                gap: '16px', 
-                marginTop: '16px',
-                width: '100%',
-                maxWidth: '100%',
-                overflow: 'hidden'
-            }}>
-                {filteredProducts.map(p => <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />)}
+            <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+                <div 
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4" 
+                    style={{ 
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                        gap: '16px',
+                        marginTop: '16px',
+                        width: '100%',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box'
+                    }}
+                >
+                    {filteredProducts.map(p => (
+                        <div key={p.id} style={{ width: '100%', maxWidth: '100%', minWidth: 0, overflow: 'hidden' }}>
+                            <ProductCard product={p} onAddToCart={handleAddToCart} />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
 
