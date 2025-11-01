@@ -2,17 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure product card images are always constrained to 96px */
-.rounded-lg img.h-24,
-img.h-24 {
+/* Ensure product card images are always constrained to 96px - CRITICAL */
+.product-card-image-container {
+  width: 100% !important;
   height: 96px !important;
   max-height: 96px !important;
+  min-height: 96px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background-color: #f9fafb !important;
+}
+
+.product-card-image-container img {
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+/* Ensure all product card images in grid are fixed height */
+.grid .product-card-image-container {
+  height: 96px !important;
+  max-height: 96px !important;
+  min-height: 96px !important;
 }
 
 /* Force grid display - critical for product cards */
 .grid {
   display: grid !important;
+}
+
+/* Ensure all grid items align properly */
+.grid > div {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Ensure product cards have consistent height in grid */
+.grid .bg-white.rounded-lg {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* Ensure grid columns work */

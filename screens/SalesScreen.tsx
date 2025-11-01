@@ -5,14 +5,14 @@ import { CATEGORIES, TAX_RATE } from '../constants';
 import { PlusIcon, MinusIcon, TrashIcon } from '../components/Icons';
 
 const ProductCard: React.FC<{ product: Product; onAddToCart: (product: Product) => void }> = ({ product, onAddToCart }) => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden flex flex-col w-full max-w-full hover:shadow-md transition-shadow">
-        <div className="w-full h-24 overflow-hidden bg-gray-50">
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover"/>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden flex flex-col w-full max-w-full hover:shadow-md transition-shadow h-full">
+        <div className="product-card-image-container">
+            <img src={product.imageUrl} alt={product.name} />
         </div>
-        <div className="p-3 flex flex-col flex-grow">
+        <div className="p-3 flex flex-col flex-grow min-h-0">
             <h3 className="font-semibold text-sm text-gray-800 truncate mb-1">{product.name}</h3>
             <p className="text-xs text-gray-500 mb-2">{product.stock} in stock</p>
-            <div className="mt-auto flex justify-between items-center">
+            <div className="mt-auto flex justify-between items-center pt-2">
                 <p className="font-bold text-blue-600 text-sm">${product.price.toFixed(2)}</p>
                 <button onClick={() => onAddToCart(product)} className="bg-blue-500 text-white rounded-full p-1.5 hover:bg-blue-600 transition-colors flex-shrink-0 shadow-sm">
                     <PlusIcon className="w-4 h-4" />
