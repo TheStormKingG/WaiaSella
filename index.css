@@ -2,74 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure product card images are always constrained to 96px - CRITICAL */
-.product-card-image-container {
-  width: 100% !important;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Ensure product card images are exactly 96px tall */
+.product-card-image-container,
+.h-24 {
   height: 96px !important;
   max-height: 96px !important;
   min-height: 96px !important;
-  overflow: hidden !important;
-  position: relative !important;
-  background-color: #f9fafb !important;
 }
 
-.product-card-image-container img {
+.product-card-image-container img,
+.h-24 img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   object-position: center !important;
-  display: block !important;
-}
-
-/* Ensure all product card images in grid are fixed height */
-.grid .product-card-image-container {
-  height: 96px !important;
-  max-height: 96px !important;
-  min-height: 96px !important;
-}
-
-/* Force grid display - critical for product cards */
-.grid {
-  display: grid !important;
-}
-
-/* Ensure all grid items align properly */
-.grid > div {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Ensure product cards have consistent height in grid */
-.grid .bg-white.rounded-lg {
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Ensure grid columns work */
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-}
-
-@media (min-width: 640px) {
-  .sm\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .md\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
 }
 

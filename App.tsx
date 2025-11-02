@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import BottomNav from './components/BottomNav';
 import SalesScreen from './screens/SalesScreen';
@@ -49,8 +48,8 @@ const App: React.FC = () => {
   return (
     <InventoryContext.Provider value={inventoryContextValue}>
       <SalesContext.Provider value={salesContextValue}>
-        <div className="h-screen w-screen bg-white flex flex-col font-sans">
-          <main className="flex-1 overflow-y-auto pb-20">
+        <div className="h-screen w-screen bg-white flex flex-col overflow-hidden">
+          <main className="flex-1 overflow-y-auto pb-16">
             {renderScreen()}
           </main>
           <BottomNav activeScreen={activeScreen} setActiveScreen={setActiveScreen} hasLowStockItems={lowStockCount > 0} />
@@ -61,3 +60,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
