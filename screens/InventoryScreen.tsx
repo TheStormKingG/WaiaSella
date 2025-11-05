@@ -1,11 +1,18 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useCallback, useEffect } from 'react';
 import { InventoryContext } from '../App';
 import type { Product } from '../types';
 import { CameraIcon } from '../components/Icons';
+import AddProductModal, { AddProductFormValues } from '../components/AddProductModal';
+import { CATEGORIES } from '../constants';
+import { enhanceProductImage, NanoBananaError } from '../services/nanoBanana';
 
 const InventoryScreen: React.FC = () => {
-  const { inventory } = useContext(InventoryContext);
+  const { inventory, setInventory } = useContext(InventoryContext);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [addSuccessMessage, setAddSuccessMessage] = useState<string | null>(null);
 
   const filteredInventory = useMemo(() => {
     if (!searchTerm) return inventory;
@@ -14,6 +21,68 @@ const InventoryScreen: React.FC = () => {
       item.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [inventory, searchTerm]);
+
+  const categories = useMemo(() => CATEGORIES.filter(cat => cat !== 'All'), []);
+
+  useEffect(() => {
+    if (!addSuccessMessage) return;
+    const timeout = window.setTimeout(() => setAddSuccessMessage(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [addSuccessMessage]);
+
+  const handleAddProduct = useCallback(
+    async (values: AddProductFormValues) => {
+      setIsSubmitting(true);
+      setModalError(null);
+
+      try {
+        const { imageFile, cost, ...rest } = values;
+
+        if (!imageFile) {
+          throw new Error('A product image is required to run Nano Banana enhancement.');
+        }
+
+        const enhancement = await enhanceProductImage({
+          imageFile,
+          itemName: rest.name,
+          category: rest.category,
+          quality: 'hd',
+        });
+
+        const newProduct: Product = {
+          id: `PROD-${Date.now()}`,
+          name: rest.name,
+          price: rest.price,
+          stock: rest.stock,
+          category: rest.category,
+          reorderLevel: rest.reorderLevel,
+          imageUrl: enhancement.imageUrl,
+          ...(typeof cost === 'number' ? { cost } : {}),
+        };
+
+        setInventory(prev => [newProduct, ...prev]);
+        setShowAddModal(false);
+        setAddSuccessMessage(
+          enhancement.source === 'enhanced'
+            ? `Saved “${rest.name}” with a Nano Banana enhanced photo.`
+            : `Saved “${rest.name}”, but Nano Banana fell back to the original photo.`
+        );
+        setSearchTerm('');
+      } catch (error) {
+        console.error('Failed to add product with Nano Banana enhancement', error);
+        if (error instanceof NanoBananaError) {
+          setModalError(error.message);
+        } else if (error instanceof Error) {
+          setModalError(error.message);
+        } else {
+          setModalError('Unexpected error while enhancing the product image.');
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [setInventory]
+  );
 
   return (
     <div className="p-4 pb-20">
@@ -25,6 +94,12 @@ const InventoryScreen: React.FC = () => {
         onChange={e => setSearchTerm(e.target.value)}
         className="w-full p-3 mb-4 bg-gray-100 border-0 rounded-lg text-gray-800 placeholder-gray-500"
       />
+
+      {addSuccessMessage && (
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          {addSuccessMessage}
+        </div>
+      )}
       
       <div className="space-y-3">
         {filteredInventory.map(item => (
@@ -51,9 +126,30 @@ const InventoryScreen: React.FC = () => {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-20 right-4 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-colors z-40">
+      <button
+        type="button"
+        onClick={() => {
+          setModalError(null);
+          setShowAddModal(true);
+        }}
+        className="fixed bottom-20 right-4 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-colors z-40"
+      >
         <CameraIcon className="w-6 h-6" />
       </button>
+
+      <AddProductModal
+        isOpen={showAddModal}
+        categories={categories}
+        isSubmitting={isSubmitting}
+        error={modalError}
+        onClose={() => {
+          if (!isSubmitting) {
+            setShowAddModal(false);
+            setModalError(null);
+          }
+        }}
+        onSubmit={handleAddProduct}
+      />
     </div>
   );
 };
