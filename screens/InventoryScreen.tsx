@@ -2,10 +2,12 @@ import React, { useState, useContext, useMemo } from 'react';
 import { InventoryContext } from '../App';
 import type { Product } from '../types';
 import { CameraIcon } from '../components/Icons';
+import AddProductModal from '../components/AddProductModal';
 
 const InventoryScreen: React.FC = () => {
-  const { inventory } = useContext(InventoryContext);
+  const { inventory, setInventory } = useContext(InventoryContext);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const filteredInventory = useMemo(() => {
     if (!searchTerm) return inventory;
@@ -14,6 +16,10 @@ const InventoryScreen: React.FC = () => {
       item.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [inventory, searchTerm]);
+
+  const handleAddProduct = (product: Product) => {
+    setInventory(prev => [product, ...prev]);
+  };
 
   return (
     <div className="p-4 pb-20">
@@ -51,9 +57,18 @@ const InventoryScreen: React.FC = () => {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-20 right-4 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-colors z-40">
+      <button
+        onClick={() => setIsAddModalOpen(true)}
+        className="fixed bottom-20 right-4 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-colors z-40"
+      >
         <CameraIcon className="w-6 h-6" />
       </button>
+
+      <AddProductModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddProduct={handleAddProduct}
+      />
     </div>
   );
 };
